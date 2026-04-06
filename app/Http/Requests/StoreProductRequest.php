@@ -22,8 +22,12 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required|string|max:255',
+
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
+
             'price' => 'required|numeric|min:0',
             'sub_category_ids' => 'required|array',
             'sub_category_ids.*' => 'exists:sub_categories,id',
@@ -33,7 +37,7 @@ class StoreProductRequest extends FormRequest
             'discount_value' => 'nullable|numeric|min:0',
             'discount_type'  => 'nullable|in:percentage,fixed',
 
-            
+
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg|max:11048',
 
             'other_images' => 'nullable|array',

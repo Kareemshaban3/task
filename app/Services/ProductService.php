@@ -35,23 +35,16 @@ class ProductService
         return DB::transaction(function () use ($product, $data) {
 
             $product->update($data);
+            $product->save();
 
             if (isset($data['sub_category_ids'])) {
                 $product->subCategories()->sync($data['sub_category_ids']);
             }
 
-            $product->tags()->sync($data['tag_ids'] ?? []);
-
-            if (isset($data['main_image'])) {
-                $this->deleteOldMainImage($product);
-                $this->uploadFile($product, $data['main_image'], true);
+            if (isset($data['tag_ids'])) {
+                $product->tags()->sync($data['tag_ids']);
             }
 
-            if (isset($data['other_images'])) {
-                foreach ($data['other_images'] as $file) {
-                    $this->uploadFile($product, $file, false);
-                }
-            }
 
             return $product->load(['subCategories', 'tags', 'images']);
         });

@@ -22,25 +22,45 @@ class ProductsController extends Controller
     {
         return response()->json(Products::with(['subCategories', 'tags', 'images'])->get());
     }
-
     public function store(StoreProductRequest $request)
     {
-        $product = $this->productService->handleStore($request->validated());
-        return response()->json(['message' => 'تم إضافة المنتج', 'data' => $product], 201);
-    }
+        $data = $request->validated();
 
-    public function show(Products $product)
-    {
-        return response()->json($product->load(['subCategories', 'tags', 'images']));
+        $data['name'] = [
+            'ar' => $request->name_ar,
+            'en' => $request->name_en,
+        ];
+        $data['description'] = [
+            'ar' => $request->description_ar,
+            'en' => $request->description_en,
+        ];
+
+        $product = $this->productService->handleStore($data);
+        return response()->json(['message' => 'تم إضافة المنتج', 'data' => $product], 201);
     }
 
     public function update(UpdateProductRequest $request, $id)
     {
         $product = Products::findOrFail($id);
+        $data = $request->validated();
 
-        $updatedProduct = $this->productService->handleUpdate($product, $request->all());
+        if ($request->has('name_ar')) {
+            $product->setTranslation('name', 'ar', $request->name_ar);
+        }
+        if ($request->has('name_en')) {
+            $product->setTranslation('name', 'en', $request->name_en);
+        }
+        if ($request->has('description_ar')) {
+            $product->setTranslation('description', 'ar', $request->description_ar);
+        }
+        if ($request->has('description_en')) {
+            $product->setTranslation('description', 'en', $request->description_en);
+        }
 
-        $updatedProduct->load(['subCategories', 'tags', 'images']);
+
+        unset($data['name_ar'], $data['name_en'], $data['description_ar'], $data['description_en']);
+
+        $updatedProduct = $this->productService->handleUpdate($product, $data);
 
         return response()->json([
             'status' => true,
@@ -48,7 +68,6 @@ class ProductsController extends Controller
             'data' => $updatedProduct
         ]);
     }
-
     public function destroy(Products $product)
     {
         foreach ($product->images as $image) {

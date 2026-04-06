@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Products extends Model
 {
 
+    use HasTranslations, HasTranslatedAttributes    ;
+
+    public $translatable = ['name', 'description'];
     protected $fillable = [
         'name',
         'price',
@@ -16,6 +21,8 @@ class Products extends Model
         'supcategories_id',
         'brands_id'
     ];
+
+
     public function subCategories()
     {
         return $this->belongsToMany(SubCategories::class, 'product_sub_categories', 'product_id', 'sub_category_id');
