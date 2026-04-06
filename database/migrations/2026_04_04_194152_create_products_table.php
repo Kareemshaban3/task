@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
-            $table->decimal('price' , 8 ,2);
+            $table->text('description')->nullable();
+            $table->decimal('price', 10, 2);
+            $table->decimal('discount_value', 10, 2)->default(0);
+            $table->enum('discount_type', ['percentage', 'fixed'])->default('fixed');
+
             $table->timestamps();
         });
     }
